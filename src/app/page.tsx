@@ -20,6 +20,7 @@ const NETWORK_PASSPHRASE =
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID ?? '';
 const CAMPAIGN_GOAL_XLM = Number(process.env.NEXT_PUBLIC_CAMPAIGN_GOAL_XLM ?? '100');
 const READONLY_ACCOUNT = process.env.NEXT_PUBLIC_READONLY_ACCOUNT ?? '';
+const OWNER_ADDRESS = process.env.NEXT_PUBLIC_OWNER_ADDRESS ?? '';
 
 const STROOPS_PER_XLM = 10_000_000n;
 
@@ -169,6 +170,10 @@ export default function Home() {
       setMessage('Set NEXT_PUBLIC_CONTRACT_ID before donating.');
       return;
     }
+    if (!OWNER_ADDRESS) {
+      setMessage('Set NEXT_PUBLIC_OWNER_ADDRESS before donating.');
+      return;
+    }
 
     const amountStroops = toStroops(amount);
     if (!publicKey || amountStroops <= 0n) {
@@ -185,11 +190,42 @@ export default function Home() {
     try {
       setIsSubmitting(true);
       setTxStatus('pending');
-      setMessage('Submitting donation transaction...');
+      setMessage('Sending payment to campaign owner...');
 
       if (!kit) {
         throw new Error('wallet_not_found');
       }
+
+      const paymentAccount = await horizonServer.loadAccount(publicKey);
+      const paymentTx = new (StellarSdk as any).TransactionBuilder(paymentAccount, {
+        fee: (StellarSdk as any).BASE_FEE,
+        networkPassphrase: NETWORK_PASSPHRASE,
+      })
+        .addOperation(
+          (StellarSdk as any).Operation.payment({
+            destination: OWNER_ADDRESS,
+            asset: (StellarSdk as any).Asset.native(),
+            amount,
+          })
+        )
+        .setTimeout(30)
+        .build();
+
+      const signedPayment = await kit.signTransaction(paymentTx.toXDR(), {
+        address: publicKey,
+        networkPassphrase: NETWORK_PASSPHRASE,
+      });
+      const signedPaymentXdr = signedPayment?.signedTxXdr ?? signedPayment;
+      const signedPaymentTx = (StellarSdk as any).TransactionBuilder.fromXDR(
+        signedPaymentXdr,
+        NETWORK_PASSPHRASE
+      );
+      const paymentResult = await horizonServer.submitTransaction(signedPaymentTx);
+      if (!paymentResult?.hash) {
+        throw new Error('Payment failed to submit.');
+      }
+
+      setMessage('Payment sent. Recording donation on-chain...');
 
       const sourceAccount = await horizonServer.loadAccount(publicKey);
       const contract = new (StellarSdk as any).Contract(CONTRACT_ID);
