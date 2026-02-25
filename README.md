@@ -12,17 +12,22 @@ Crowdfunding dApp on Stellar testnet with multi-wallet connect, Soroban contract
 
 ## Setup
 
-1. Install dependencies:
+1. Clone repo
+```bash
+https://github.com/Abhishek-singh88/stellar-crowdfund-dapp.git
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Configure env:
+3. Configure env:
 ```bash
 cp .env.example .env.local
 ```
 
-3. Update `.env`:
+4. Update `.env`:
 ```env
 NEXT_PUBLIC_CONTRACT_ID=CAEYK32NTZKTS2BHVBUYUZXE2QDNDSO2PKJKO7YEWDA4BOPU5D2IDXS3
 NEXT_PUBLIC_CAMPAIGN_GOAL_XLM=10000
@@ -33,7 +38,7 @@ NEXT_PUBLIC_OWNER_ADDRESS=GCPWUPRZEIFCMHN4RO7CXFEFZ6RFN7P4PBVBVDUEOTIPDFBOUWGDCE
 NEXT_PUBLIC_READONLY_ACCOUNT=GCPWUPRZEIFCMHN4RO7CXFEFZ6RFN7P4PBVBVDUEOTIPDFBOUWGDCEZE
 ```
 
-4. Run locally:
+5. Run locally:
 ```bash
 npm run dev
 ```
