@@ -22,12 +22,7 @@ git clone https://github.com/Abhishek-singh88/stellar-crowdfund-dapp.git
 npm install
 ```
 
-3. Configure env:
-```bash
-cp .env.example .env.local
-```
-
-4. Update `.env`:
+3. Update `.env`:
 ```env
 NEXT_PUBLIC_CONTRACT_ID=CAEYK32NTZKTS2BHVBUYUZXE2QDNDSO2PKJKO7YEWDA4BOPU5D2IDXS3
 NEXT_PUBLIC_CAMPAIGN_GOAL_XLM=10000
@@ -38,7 +33,7 @@ NEXT_PUBLIC_OWNER_ADDRESS=GCPWUPRZEIFCMHN4RO7CXFEFZ6RFN7P4PBVBVDUEOTIPDFBOUWGDCE
 NEXT_PUBLIC_READONLY_ACCOUNT=GCPWUPRZEIFCMHN4RO7CXFEFZ6RFN7P4PBVBVDUEOTIPDFBOUWGDCEZE
 ```
 
-5. Run locally:
+4. Run locally:
 ```bash
 npm run dev
 ```
