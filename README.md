@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stellar Crowdfund dApp
 
-## Getting Started
+Crowdfunding dApp on Stellar testnet with multi-wallet connect, Soroban contract integration, real-time updates, and transaction status tracking.
 
-First, run the development server:
+## Features
 
+- Multi-wallet connect via StellarWalletsKit (Freighter/Albedo/WalletConnect)
+- Real XLM payment to owner on donate
+- Soroban contract records totals and donors
+- Real-time sync (event polling + periodic reads)
+- Transaction status: `pending` / `success` / `failed`
+
+## Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Configure env:
+```bash
+cp .env.example .env.local
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Update `.env`:
+```env
+NEXT_PUBLIC_CONTRACT_ID=CAEYK32NTZKTS2BHVBUYUZXE2QDNDSO2PKJKO7YEWDA4BOPU5D2IDXS3
+NEXT_PUBLIC_CAMPAIGN_GOAL_XLM=10000
+NEXT_PUBLIC_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
+NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org
+NEXT_PUBLIC_STELLAR_NETWORK_PASSPHRASE=Test SDF Network ; September 2015
+NEXT_PUBLIC_OWNER_ADDRESS=GCPWUPRZEIFCMHN4RO7CXFEFZ6RFN7P4PBVBVDUEOTIPDFBOUWGDCEZE
+NEXT_PUBLIC_READONLY_ACCOUNT=GCPWUPRZEIFCMHN4RO7CXFEFZ6RFN7P4PBVBVDUEOTIPDFBOUWGDCEZE
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run locally:
+```bash
+npm run dev
+```
 
-## Learn More
+## Contract Deploy (Testnet)
 
-To learn more about Next.js, take a look at the following resources:
+1. Build:
+```bash
+cd contracts/counter
+stellar contract build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Deploy:
+```bash
+stellar contract deploy \
+  --wasm target/wasm32v1-none/release/crowdfund_counter.wasm \
+  --source my-testnet \
+  --network testnet
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Initialize (goal in stroops):
+```bash
+stellar contract invoke \
+  --id YOUR_CONTRACT_ID \
+  --source my-testnet-2 \
+  --network testnet \
+  -- initialize \
+  --admin YOUR_PUBLIC_KEY \
+  --goal 100000000000
+```
 
-## Deploy on Vercel
+## Contract Address
+```bash
+CAEYK32NTZKTS2BHVBUYUZXE2QDNDSO2PKJKO7YEWDA4BOPU5D2IDXS3
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Explorer: [https://stellar.expert/explorer/testnet/contract/CAEYK32NTZKTS2BHVBUYUZXE2QDNDSO2PKJKO7YEWDA4BOPU5D2IDXS3](https://stellar.expert/explorer/testnet/contract/CAEYK32NTZKTS2BHVBUYUZXE2QDNDSO2PKJKO7YEWDA4BOPU5D2IDXS3)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details. 
+### Main page Screenshot
+![Landing page](public/1.png)
+
+### Wallet options Screenshot
+![Wallet options](public/2.png)
+
+### Donate Screenshot
+![Donate](public/3.png)
+
+### Success Screenshot
+![success](public/4.png)
+
+
+
+## Notes
+
+- Donations send real XLM to `NEXT_PUBLIC_OWNER_ADDRESS`.
+- Contract records `donate` totals for visibility and tracking.
