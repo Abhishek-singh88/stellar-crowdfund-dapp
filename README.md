@@ -14,7 +14,7 @@ Crowdfunding dApp on Stellar testnet with multi-wallet connect, Soroban contract
 
 1. Clone repo
 ```bash
-https://github.com/Abhishek-singh88/stellar-crowdfund-dapp.git
+git clone https://github.com/Abhishek-singh88/stellar-crowdfund-dapp.git
 ```
 
 2. Install dependencies:
